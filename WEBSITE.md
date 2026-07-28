@@ -1,4 +1,4 @@
-# SWE-TEST website
+# SWE-Test website
 
 The benchmark website is a dependency-free static application designed for GitHub Pages.
 
@@ -21,7 +21,7 @@ Each leaderboard record uses this schema:
 ```js
 {
   model: "Model name",
-  agent: "agent-harness",
+  agent: "agent-scaffold",
   effort: "default",
   trials: "60 / 60",
   trialsValue: 60,
@@ -33,7 +33,7 @@ Each leaderboard record uses this schema:
 }
 ```
 
-SWE-TEST Online uses a separate 12-hour aggregate schema:
+Online Arena uses a separate 12-hour aggregate schema:
 
 ```js
 {
@@ -51,6 +51,8 @@ SWE-TEST Online uses a separate 12-hour aggregate schema:
 ```
 
 `score` is the mean normalized coverage reward. `bugs` counts findings with an upstream issue number or confirmed fix. Numeric token and cost fields support client-side sorting; the formatted fields are displayed in the table.
+
+The JavaScript data keys retain their historical names: `unverified` is the paper's **Default** mode, `verified` is **Feedback-enabled**, and `online` is **Online Arena**. User-facing copy should use the paper terminology.
 
 ## Deployment
 

@@ -19,7 +19,7 @@
   const taskCount = domain.programs.reduce((total, item) => total + item.tasks.length, 0);
   const targetCount = domain.programs.length;
   const pageUrl = `https://swe-test-benchmark.github.io/registry.html?domain=${encodeURIComponent(domain.slug)}`;
-  const pageTitle = `${domain.name} — SWE-TEST Registry`;
+  const pageTitle = `${domain.name} — SWE-Test Registry`;
 
   document.title = pageTitle;
   document.querySelector("#registry-canonical").href = pageUrl;
@@ -62,7 +62,7 @@
                 <a class="task-repository" href="${taskRepository}/${encodeURIComponent(task)}" target="_blank" rel="noreferrer">Repository ↗</a>
               </div>
               <div id="${panelId}" class="task-instance-description" hidden>
-                <p>Generate a new input that inverts the recorded branch outcome from FALSE to TRUE.</p>
+                <p>Predict a new input that takes the fixed target branch. The same target is used in Default and Feedback-enabled modes.</p>
                 <dl>
                   <div><dt>Source location</dt><dd><code>${escapeHtml(detail.branch || "See repository")}</code></dd></div>
                   <div><dt>Fuzz target</dt><dd><code>${escapeHtml(detail.fuzzTarget || item.target)}</code></dd></div>
@@ -90,7 +90,7 @@
   document.querySelector("#registry-command").innerHTML = `<span class="comment"># Install dependencies</span>
 <span class="prompt">$</span> <span class="syntax-command">uv</span> <span class="syntax-subcommand">sync</span>
 
-<span class="comment"># Run one verifier-enabled task</span>
+<span class="comment"># Run one Feedback-enabled task</span>
 <span class="prompt">$</span> <span class="syntax-command">python</span> <span class="syntax-path">run_benchmark.py</span> <span class="syntax-continuation">\\</span>
   <span class="syntax-flag">--model</span> <span class="syntax-value">your-model</span> <span class="syntax-continuation">\\</span>
   <span class="syntax-flag">--agent</span> <span class="syntax-value">claude-code</span> <span class="syntax-continuation">\\</span>

@@ -2,17 +2,17 @@
 
 **网站：** [交互式排行榜与 Benchmark 概览](https://swe-test-benchmark.github.io/) · [网站维护与部署说明](WEBSITE.md)
 
-SWE-Test 检验 Coding Agent 在真实软件测试场景下的漏洞挖掘与逆向推理能力。这要求 Agent 具备代码理解、约束推断与输入合成能力——从目标分支条件出发，逆向推理出能够满足该条件的具体测试输入。
+**SWE-Test: Benchmarking LLM Agents' Vulnerability Discovery Ability via Input Prediction** 通过真实 C/C++ 程序上的输入预测任务评测漏洞挖掘 Agent，并将这一复合能力分解为代码理解、反馈驱动纠正和路径探索。
 
 本基准测试提供三种模式：
 
-- **Default (With Verifier)：** 60 个任务实例，覆盖 23 个程序。Agent 需要构造测试输入来翻转特定分支条件，可以执行验证脚本获取反馈。
-- **Without Verifier：** 同样的 60 个任务实例，但移除了验证脚本，Agent 必须仅凭源码推理分支条件，更接近符号执行和静态约束推断的能力边界。
-- **Online (SWE-Test-Online)：** 长期运行的无约束评测。Agent 持续迭代以最大化 14 个真实开源程序的代码覆盖率，无预设目标分支。
+- **Default：** 60 个固定目标输入预测任务。Agent 只获得源码和目标分支，不提供执行 oracle，用于隔离深层代码理解能力。
+- **Feedback-enabled：** 使用相同的 60 个目标，并增加报告分支距离的验证 oracle，用于评测反馈驱动纠正能力。
+- **Online Arena：** 覆盖 14 个程序的开放式路径探索模式。它移除预设目标，以归一化覆盖率增益计分；已发布榜单采用 11 个已评测程序上的 12 小时运行。
 
 ---
 
-## Default (With Verifier)
+## Feedback-enabled
 
 ### 任务设计
 
@@ -49,9 +49,9 @@ Agent 的任务是构造一个新的测试输入，**使该分支条件从 FALSE
 
 **评分：** Pass = 命中目标分支，Fail = 其他。
 
-#### With Verifier
+#### Feedback-enabled
 
-| 模型 | Agent | Effort | Valid | Pass Rate | SWE-bench-Verified | Terminal-Bench-2.0 | 平均 Turns | 平均耗时 | Tokens |
+| 模型 | Scaffold | Effort | Valid | Pass Rate | SWE-bench-Verified | Terminal-Bench-2.0 | 平均 Turns | 平均耗时 | Tokens |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | GLM-5.1 | claude-code | high | **60/60** | **56.7%** | 77.8%*(OpenHands, GLM-5 base) | 69.0%(vendor) | 394.8 | 118.1m | 18.76M |
 | GLM-5.1 | claude-code | low | 36/60 | 33.3% | 77.8%*(vendor) | 69.0%(vendor) | 389.4 | 111.2m | 20.14M |
@@ -83,13 +83,13 @@ Agent 的任务是构造一个新的测试输入，**使该分支条件从 FALSE
 
 ---
 
-## Without Verifier
+## Default
 
-同样的 60 个任务实例，但移除了验证脚本。没有运行时反馈，Agent 必须仅凭源码推理分支条件，这更接近符号执行和静态约束推断的能力边界。Agent 无法验证候选输入是否真正触发了目标分支，它必须通过心智执行来完成：追踪代码中的数据流、推断输入约束、仅靠推理构造满足条件的种子。
+同样的 60 个任务实例不提供执行 oracle。Agent 必须仅凭源码进行数据流追踪、约束推断和输入构造，以隔离深层代码理解能力。
 
 #### 评测结果
 
-| 模型 | Agent | Effort | Valid | Pass Rate | 平均 Turns | 平均耗时 | Tokens |
+| 模型 | Scaffold | Effort | Valid | Pass Rate | 平均 Turns | 平均耗时 | Tokens |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Kimi-K2.6 | kimi-code | — | **60/60** | **8.3%** | 167.6 | 26.9m | N/A |
 | Kimi-K2.6 | claude-code | high | **60/60** | **8.3%** | 260.1 | 55.9m | 9.77M |
@@ -116,9 +116,9 @@ Agent 的任务是构造一个新的测试输入，**使该分支条件从 FALSE
 
 ---
 
-## Online (SWE-Test-Online)
+## Online Arena
 
-长期运行的 Agent 评测模式，无预设目标分支。Agent 持续迭代以最大化代码覆盖率，覆盖 14 个真实开源程序，无时间限制——Agent 自主决定下一步探索方向。
+开放式 Agent 评测模式，无预设目标分支。Agent 持续迭代以最大化 14 个真实开源程序的代码覆盖率；运行时长可配置，已发布榜单统一采用 12 小时窗口以便比较。
 
 ### 任务设计
 
@@ -174,7 +174,7 @@ harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
 
 ---
 
-## 运行（Default & Without Verifier）
+## 运行（Default 与 Feedback-enabled）
 
 ### 前置要求
 
@@ -185,7 +185,7 @@ uv sync
 docker info >/dev/null
 ```
 
-### With Verifier
+### Feedback-enabled
 
 ```bash
 # 全量运行
@@ -206,7 +206,7 @@ python run_benchmark.py \
   --task tasks/swe-test/<task_name>
 ```
 
-### Without Verifier
+### Default
 
 与上面相同，将 `--tasks-dir` 替换为 `tasks/swe-test-wo-verifier`。
 
@@ -218,7 +218,7 @@ python run_benchmark.py \
 
 ---
 
-### Online
+### Online Arena
 
 ```bash
 harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
@@ -237,10 +237,10 @@ harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
 
 | 状态 | 项目 |
 |--------|------|
-| 完成 | Opus-4.6 (Default) |
-| 完成 | GPT-5.5 (Default) |
+| 完成 | Opus-4.6 (Feedback-enabled) |
+| 完成 | GPT-5.5 (Feedback-enabled) |
+| 完成 | GLM-5.2 (Feedback-enabled) |
 | 完成 | GLM-5.2 (Default) |
-| 完成 | GLM-5.2 (Default - Without Verifier) |
 
 ---
 

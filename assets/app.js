@@ -3,7 +3,7 @@
 
   const data = window.SWE_TEST_DATA;
   const state = {
-    mode: "verified",
+    mode: "unverified",
     query: "",
     sortKey: "score",
     sortDirection: "desc",
@@ -12,32 +12,32 @@
 
   const modeConfig = {
     verified: {
-      description: "Pass rate across branch-inversion tasks. Each row is a model–agent configuration; results are drawn from the project repository.",
+      description: "Input prediction on 60 fixed target branches with a verification oracle for feedback. Each row is a model–scaffold configuration.",
       leaderLabel: "Best pass rate",
       chartTitle: "Top completed configurations",
       chartMetric: "Pass rate (%)",
-      chartLabel: "Top model pass rates",
+      chartLabel: "Top Feedback-enabled pass rates",
       note: "Pass rate counts rewards ≥ 1.0 across 60 tasks; missing results count as zero. Trial directories, scored results, average reward, and exceptions are shown as reported.",
       scoreScale: 100,
       formatScore: (score) => `${score.toFixed(1)}%`
     },
     unverified: {
-      description: "Source-only branch inversion without runtime oracle feedback, using the same 60 target branches as the default setting.",
+      description: "Source-only input prediction on 60 fixed target branches, without an execution oracle. Each row is a model–scaffold configuration.",
       leaderLabel: "Best pass rate",
       chartTitle: "Top completed configurations",
       chartMetric: "Pass rate (%)",
-      chartLabel: "Top source-only model pass rates",
+      chartLabel: "Top Default-mode pass rates",
       note: "Pass rate counts rewards ≥ 1.0 across 60 source-only tasks; missing results count as zero. Trial directories, scored results, average reward, and exceptions are shown as reported.",
       scoreScale: 100,
       formatScore: (score) => `${score.toFixed(1)}%`
     },
     online: {
-      description: "Mean normalized coverage reward for published 12-hour autonomous runs across 11 evaluated programs from the 14-program Online corpus, with verified upstream bug findings shown alongside efficiency data.",
+      description: "Mean normalized coverage reward for published 12-hour Online Arena runs across 11 evaluated programs from the 14-program corpus; confirmed bugs are reported separately.",
       leaderLabel: "Best mean reward",
       chartTitle: "12-hour mean reward by model",
       chartMetric: "Mean reward (0–1)",
-      chartLabel: "SWE-TEST Online 12-hour mean rewards",
-      note: "Published Online scores are means across 11 evaluated programs. The three browser-engine targets not included in those published runs are JavaScriptCore, V8, and SpiderMonkey, bringing the current Online corpus to 14 targets. Bug counts include upstream issues or confirmed fixes only.",
+      chartLabel: "Online Arena 12-hour mean rewards",
+      note: "Published Online Arena scores are means across 11 evaluated programs. The three browser-engine targets not included in those runs are JavaScriptCore, V8, and SpiderMonkey, bringing the current corpus to 14 targets. Bug counts include upstream issues or confirmed fixes only.",
       scoreScale: 1,
       formatScore: (score) => score.toFixed(4)
     }
@@ -110,7 +110,7 @@
     tableHead.innerHTML = `<tr>
       <th scope="col" title="Benchmark rank">Rank</th>
       ${sortableHeader("model", "Model")}
-      ${sortableHeader("agent", "Agent")}
+      ${sortableHeader("agent", "Scaffold")}
       ${online ? `
         <th scope="col">Window</th>
         <th scope="col">Evaluated</th>
@@ -183,7 +183,7 @@
       ? `<span>Evaluated <b>${escapeHtml(row.tasks)}</b></span>
          <span>Verified bugs <b>${row.bugs}</b></span>
          <span>Tokens <b>${escapeHtml(row.tokens)}</b></span>`
-      : `<span>Agent <b>${escapeHtml(formatAgent(row.agent))}</b></span>
+      : `<span>Scaffold <b>${escapeHtml(formatAgent(row.agent))}</b></span>
          <span>Scored <b>${escapeHtml(row.scored)}</b></span>
          <span>Avg. reward <b>${row.avgReward.toFixed(3)}</b></span>`;
 
@@ -335,7 +335,7 @@
     online: {
       primary: "14 programs.",
       secondary: "Open-ended runs.",
-      description: "Online evaluation supports configurable run durations and measures how effectively an agent grows coverage without a predefined target branch. The published leaderboard uses 12-hour runs."
+      description: "Online Arena supports configurable run durations and measures self-directed path exploration through normalized coverage gain without a predefined target branch. The published leaderboard uses 12-hour runs."
     }
   };
 
@@ -387,7 +387,7 @@
   }));
 
   const command = `uv sync\n\npython run_benchmark.py \\\n  --model your-model \\\n  --agent claude-code \\\n  --base-url "$BASE_URL" \\\n  --api-key "$API_KEY" \\\n  --tasks-dir tasks/swe-test \\\n  --extra --n-concurrent 4`;
-  const citation = `@misc{swe_test_2026,\n  year = {2026},\n  url = {https://swe-test-benchmark.github.io/}\n}`;
+  const citation = `@misc{swe_test_2026,\n  title = {{SWE-Test}: Benchmarking LLM Agents' Vulnerability Discovery Ability via Input Prediction},\n  year = {2026},\n  url = {https://swe-test-benchmark.github.io/}\n}`;
 
   async function copyText(text) {
     try {

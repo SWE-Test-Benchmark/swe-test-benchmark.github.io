@@ -2,17 +2,17 @@
 
 **Website:** [Interactive leaderboard and benchmark overview](https://swe-test-benchmark.github.io/) · [Website development guide](WEBSITE.md)
 
-SWE-Test evaluates Coding Agents on vulnerability discovery and reverse reasoning in real-world software testing scenarios. This requires agents to perform code comprehension, constraint inference, and input synthesis, reasoning backward from a target branch condition to a concrete input that satisfies it.
+**SWE-Test: Benchmarking LLM Agents' Vulnerability Discovery Ability via Input Prediction** evaluates vulnerability-discovery agents on real-world C and C++ programs. It decomposes discovery into code comprehension, feedback-driven correction, and path exploration.
 
 The benchmark offers three modes:
 
-- **Default (With Verifier):** 60 task instances across 23 programs. The agent must invert a specific branch condition by constructing a test input, with access to a verification oracle for feedback.
-- **Without Verifier:** The same 60 task instances, but the verification oracle is removed. Without runtime feedback, agents must reason about branch conditions purely from source code, exercising capabilities closer to symbolic execution and static constraint inference.
-- **Online (SWE-Test-Online):** A long-running, unconstrained benchmark. The agent iterates continuously to maximize code coverage across 14 open-source programs, with no predefined target branch.
+- **Default:** 60 fixed-target input-prediction tasks. The agent receives source code and a target branch but no execution oracle, isolating deep code comprehension.
+- **Feedback-enabled:** The same 60 targets plus a verification oracle that reports progress toward the branch, testing feedback-driven correction.
+- **Online Arena:** An open-ended path-exploration mode across 14 programs. It removes the predefined target and scores normalized coverage gain; the published leaderboard uses 12-hour runs across 11 evaluated programs.
 
 ---
 
-## Default (With Verifier)
+## Feedback-enabled
 
 ### Task Design
 
@@ -49,9 +49,9 @@ A reference solution (answer seed) is a concrete byte sequence that triggers the
 
 **Scoring:** Pass = target branch triggered, Fail = otherwise.
 
-#### With Verifier
+#### Feedback-enabled
 
-| Model | Agent | Effort | Status | Pass Rate | SWE-bench-Verified(#500) | Terminal-Bench-2.0(#89) | Avg Turns | Avg Time | Tokens |
+| Model | Scaffold | Effort | Status | Pass Rate | SWE-bench-Verified(#500) | Terminal-Bench-2.0(#89) | Avg Turns | Avg Time | Tokens |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | GLM-5.1 | claude-code | high | Done | **56.7%** | 77.8%*(OpenHands, GLM-5 base) | 69.0%(vendor) | 394.8 | 118.1m | 18.76M |
 | GLM-5.1 | claude-code | low | 36 | 33.3% | 77.8%*(vendor) | 69.0%(vendor) | 389.4 | 111.2m | 20.14M |
@@ -83,13 +83,13 @@ A reference solution (answer seed) is a concrete byte sequence that triggers the
 
 ---
 
-## Without Verifier
+## Default
 
-The same 60 task instances, but the verification oracle is removed. Without runtime feedback, agents must reason about branch conditions purely from source code, exercising capabilities closer to symbolic execution and static constraint inference. This setting measures a model's ability to perform mental execution: tracing data flow through the code, inferring input constraints, and constructing seeds that satisfy them through reasoning alone.
+The same 60 task instances are presented without an execution oracle. Agents must reason about branch conditions purely from source code, exercising deep code comprehension through data-flow tracing, constraint inference, and input construction.
 
 #### Results
 
-| Model | Agent | Effort | Status | Pass Rate | Avg Turns | Avg Time | Tokens |
+| Model | Scaffold | Effort | Status | Pass Rate | Avg Turns | Avg Time | Tokens |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Kimi-K2.6 | kimi-code | — | Done | **8.3%** | 167.6 | 26.9m | N/A |
 | Kimi-K2.6 | claude-code | high | Done | **8.3%** | 260.1 | 55.9m | 9.77M |
@@ -116,9 +116,9 @@ The same 60 task instances, but the verification oracle is removed. Without runt
 
 ---
 
-## Online (SWE-Test-Online)
+## Online Arena
 
-A long-running benchmark where agents iterate continuously with no predefined target branch. The goal is to maximize code coverage across 14 real-world open-source programs, with no time limit—the agent autonomously decides what to explore next.
+An open-ended benchmark where agents iterate with no predefined target branch. The goal is to maximize code coverage across 14 real-world open-source programs. The run window is configurable; the published leaderboard uses a common 12-hour window for comparison.
 
 ### Task Design
 
@@ -171,7 +171,7 @@ uv sync
 docker info >/dev/null
 ```
 
-### With Verifier
+### Feedback-enabled
 
 ```bash
 # Full run
@@ -192,7 +192,7 @@ python run_benchmark.py \
   --task tasks/swe-test/<task_name>
 ```
 
-### Without Verifier
+### Default
 
 Same as above, replace `--tasks-dir` with `tasks/swe-test-wo-verifier`.
 
@@ -204,7 +204,7 @@ Same as above, replace `--tasks-dir` with `tasks/swe-test-wo-verifier`.
 
 ---
 
-### Online
+### Online Arena
 
 ```bash
 harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
@@ -223,10 +223,10 @@ harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
 
 | Status | Item |
 |--------|------|
-| Done | Opus-4.6 (Default) | 
-| Done | GPT-5.5 (Default) |
+| Done | Opus-4.6 (Feedback-enabled) |
+| Done | GPT-5.5 (Feedback-enabled) |
+| Done | GLM-5.2 (Feedback-enabled) |
 | Done | GLM-5.2 (Default) |
-| Done | GLM-5.2 (Default - Without Verifier) |
 
 ---
 
