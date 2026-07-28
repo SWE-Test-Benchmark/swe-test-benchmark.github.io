@@ -40,7 +40,7 @@ SWE-TEST Online uses a separate 12-hour aggregate schema:
   duration: "12h",
   tasks: "11 / 11",
   score: 0.3136,
-  bugs: 6,
+  bugs: 0,
   tokens: "4.414B",
   tokensValue: 4.413630528,
   cost: "$2,544.82",

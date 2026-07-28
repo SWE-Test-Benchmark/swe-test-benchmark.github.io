@@ -37,7 +37,7 @@
       chartTitle: "12-hour mean reward by model",
       chartMetric: "Mean reward (0–1)",
       chartLabel: "SWE-TEST Online 12-hour mean rewards",
-      note: "Online scores are means across 11 programs. Kimi-K2.6 is averaged over 10 stable results and its token/cost totals cover known tasks only (*). Three DeepSeek fallback scores use peak line coverage. Bug counts include upstream issues or confirmed fixes only.",
+      note: "Online scores are means across 11 programs. Three DeepSeek fallback scores use peak line coverage. Bug counts include upstream issues or confirmed fixes only.",
       scoreScale: 1,
       formatScore: (score) => score.toFixed(4)
     }
