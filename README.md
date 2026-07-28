@@ -1,6 +1,6 @@
 # SWE-Test
 
-**Website:** [Interactive leaderboard and benchmark overview](https://liangcaisu.github.io/SWE-Test-Benchmark/) · [Website development guide](WEBSITE.md)
+**Website:** [Interactive leaderboard and benchmark overview](https://swe-test-benchmark.github.io/) · [Website development guide](WEBSITE.md)
 
 SWE-Test evaluates Coding Agents on vulnerability discovery and reverse reasoning in real-world software testing scenarios. This requires agents to perform code comprehension, constraint inference, and input synthesis, reasoning backward from a target branch condition to a concrete input that satisfies it.
 

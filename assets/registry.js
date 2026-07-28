@@ -18,8 +18,14 @@
 
   const taskCount = domain.programs.reduce((total, item) => total + item.tasks.length, 0);
   const targetCount = domain.programs.length;
+  const pageUrl = `https://swe-test-benchmark.github.io/registry.html?domain=${encodeURIComponent(domain.slug)}`;
+  const pageTitle = `${domain.name} — SWE-TEST Registry`;
 
-  document.title = `${domain.name} — SWE-TEST Registry`;
+  document.title = pageTitle;
+  document.querySelector("#registry-canonical").href = pageUrl;
+  document.querySelector("#registry-og-url").content = pageUrl;
+  document.querySelector("#registry-og-title").content = pageTitle;
+  document.querySelector("#registry-og-description").content = domain.summary;
   document.querySelector("#breadcrumb-domain").textContent = domain.name;
   document.querySelector("#registry-eyebrow").textContent = `Evaluation corpus / ${String(corpus.indexOf(domain) + 1).padStart(2, "0")}`;
   document.querySelector("#registry-title").textContent = domain.name;
@@ -113,11 +119,19 @@
   document.querySelector("#copy-registry-command").addEventListener("click", () => copyText(command));
 
   const themeToggle = document.querySelector(".theme-toggle");
+  function updateThemeToggle() {
+    const dark = document.documentElement.dataset.theme === "dark";
+    themeToggle.setAttribute("aria-label", "Dark theme");
+    themeToggle.setAttribute("aria-pressed", String(dark));
+    themeToggle.title = dark ? "Switch to light theme" : "Switch to dark theme";
+  }
+  updateThemeToggle();
   themeToggle.addEventListener("click", () => {
     const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem("swe-test-theme", theme);
+    try { localStorage.setItem("swe-test-theme", theme); } catch {}
     document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#101311" : "#f4f2ed";
+    updateThemeToggle();
   });
 
   const menuButton = document.querySelector(".mobile-menu");

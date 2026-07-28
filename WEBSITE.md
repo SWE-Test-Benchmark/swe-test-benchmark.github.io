@@ -22,12 +22,14 @@ Each leaderboard record uses this schema:
 {
   model: "Model name",
   agent: "agent-harness",
-  effort: "high",
-  status: "Done",
+  effort: "default",
+  trials: "60 / 60",
+  trialsValue: 60,
+  scored: "60 / 60",
+  scoredValue: 60,
   score: 42.0,
-  turns: "120.0",
-  time: "30.0m",
-  tokens: "5.00M"
+  avgReward: 0.500,
+  exceptions: 0
 }
 ```
 
@@ -54,7 +56,7 @@ SWE-TEST Online uses a separate 12-hour aggregate schema:
 
 The workflow in `.github/workflows/pages.yml` publishes only the website files whenever `main` receives a relevant change. In the GitHub repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. The expected URL is:
 
-`https://jwgo90.github.io/SWE-Test-Benchmark/`
+`https://swe-test-benchmark.github.io/`
 
 ## Structure
 

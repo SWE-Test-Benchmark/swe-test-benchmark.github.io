@@ -1,6 +1,6 @@
 # SWE-Test
 
-**网站：** [交互式排行榜与 Benchmark 概览](https://liangcaisu.github.io/SWE-Test-Benchmark/) · [网站维护与部署说明](WEBSITE.md)
+**网站：** [交互式排行榜与 Benchmark 概览](https://swe-test-benchmark.github.io/) · [网站维护与部署说明](WEBSITE.md)
 
 SWE-Test 检验 Coding Agent 在真实软件测试场景下的漏洞挖掘与逆向推理能力。这要求 Agent 具备代码理解、约束推断与输入合成能力——从目标分支条件出发，逆向推理出能够满足该条件的具体测试输入。
 

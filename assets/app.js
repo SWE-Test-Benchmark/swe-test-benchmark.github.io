@@ -17,7 +17,7 @@
       chartTitle: "Top completed configurations",
       chartMetric: "Pass rate (%)",
       chartLabel: "Top model pass rates",
-      note: "“With verifier” grants runtime oracle feedback. In-progress runs are shown as reported and may change.",
+      note: "Pass rate counts rewards ≥ 1.0 across 60 tasks; missing results count as zero. Trial directories, scored results, average reward, and exceptions are shown as reported.",
       scoreScale: 100,
       formatScore: (score) => `${score.toFixed(1)}%`
     },
@@ -27,17 +27,17 @@
       chartTitle: "Top completed configurations",
       chartMetric: "Pass rate (%)",
       chartLabel: "Top source-only model pass rates",
-      note: "“Without verifier” tests static reasoning and mental execution. In-progress runs are shown as reported and may change.",
+      note: "Pass rate counts rewards ≥ 1.0 across 60 source-only tasks; missing results count as zero. Trial directories, scored results, average reward, and exceptions are shown as reported.",
       scoreScale: 100,
       formatScore: (score) => `${score.toFixed(1)}%`
     },
     online: {
-      description: "Mean normalized coverage reward after 12-hour autonomous runs across 11 real-world programs, with verified upstream bug findings shown alongside efficiency data.",
+      description: "Mean normalized coverage reward for published 12-hour autonomous runs across 11 evaluated programs from the 14-program Online corpus, with verified upstream bug findings shown alongside efficiency data.",
       leaderLabel: "Best mean reward",
       chartTitle: "12-hour mean reward by model",
       chartMetric: "Mean reward (0–1)",
       chartLabel: "SWE-TEST Online 12-hour mean rewards",
-      note: "Online scores are means across 11 programs. Three DeepSeek fallback scores use peak line coverage. Bug counts include upstream issues or confirmed fixes only.",
+      note: "Published Online scores are means across 11 evaluated programs. The three browser-engine targets not included in those published runs are JavaScriptCore, V8, and SpiderMonkey, bringing the current Online corpus to 14 targets. Bug counts include upstream issues or confirmed fixes only.",
       scoreScale: 1,
       formatScore: (score) => score.toFixed(4)
     }
@@ -119,11 +119,11 @@
         ${sortableHeader("tokensValue", "Total tokens", true)}
         ${sortableHeader("costValue", "Est. cost", true)}` : `
         <th scope="col">Effort</th>
-        <th scope="col">Status</th>
+        ${sortableHeader("trialsValue", "Trial dirs", true)}
+        ${sortableHeader("scoredValue", "Scored", true)}
         ${sortableHeader("score", "Pass rate", true)}
-        <th scope="col" class="numeric">Avg. turns</th>
-        <th scope="col" class="numeric">Avg. time</th>
-        <th scope="col" class="numeric">Tokens</th>`}
+        ${sortableHeader("avgReward", "Avg. reward", true)}
+        ${sortableHeader("exceptions", "Exceptions", true)}`}
     </tr>`;
   }
 
@@ -156,18 +156,18 @@
         </tr>`;
       }
 
-      const isDone = row.status === "Done";
+      const trialsComplete = row.trialsValue === 60;
       return `
         <tr>
           ${rank}
           <td class="model-cell"><strong>${escapeHtml(row.model)}</strong></td>
           <td><span class="agent-chip">${escapeHtml(row.agent)}</span></td>
           <td><span class="effort-chip">${escapeHtml(row.effort)}</span></td>
-          <td><span class="status-chip ${isDone ? "done" : "running"}">${isDone ? "● " : "◌ "}${escapeHtml(row.status)}</span></td>
+          <td class="numeric"><span class="status-chip ${trialsComplete ? "done" : "running"}">${trialsComplete ? "● " : "◌ "}${escapeHtml(row.trials)}</span></td>
+          <td class="numeric">${escapeHtml(row.scored)}</td>
           ${score}
-          <td class="numeric">${escapeHtml(row.turns)}</td>
-          <td class="numeric">${escapeHtml(row.time)}</td>
-          <td class="numeric">${escapeHtml(row.tokens)}</td>
+          <td class="numeric">${row.avgReward.toFixed(3)}</td>
+          <td class="numeric">${row.exceptions}</td>
         </tr>`;
     }).join("");
 
@@ -184,8 +184,8 @@
          <span>Verified bugs <b>${row.bugs}</b></span>
          <span>Tokens <b>${escapeHtml(row.tokens)}</b></span>`
       : `<span>Agent <b>${escapeHtml(formatAgent(row.agent))}</b></span>
-         <span>Effort <b>${escapeHtml(row.effort)}</b></span>
-         <span>Status <b>${escapeHtml(row.status)}</b></span>`;
+         <span>Scored <b>${escapeHtml(row.scored)}</b></span>
+         <span>Avg. reward <b>${row.avgReward.toFixed(3)}</b></span>`;
 
     return `<span class="chart-tooltip" role="tooltip">
       <strong>${escapeHtml(row.model)}</strong>
@@ -197,7 +197,7 @@
   function renderChart() {
     const config = modeConfig[state.mode];
     const completed = data.leaderboards[state.mode]
-      .filter((row) => state.mode === "online" || row.status === "Done")
+      .filter((row) => state.mode === "online" || row.trialsValue === 60)
       .sort((a, b) => b.score - a.score)
       .slice(0, 5);
     chart.innerHTML = completed.map((row) => {
@@ -242,20 +242,45 @@
     return agent.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
   }
 
-  document.querySelectorAll(".mode-tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      state.mode = tab.dataset.mode;
-      state.expanded = false;
-      state.sortKey = "score";
-      state.sortDirection = "desc";
-      document.querySelectorAll(".mode-tab").forEach((item) => {
-        const active = item === tab;
-        item.classList.toggle("active", active);
-        item.setAttribute("aria-selected", String(active));
-      });
-      renderLeaderboard();
+  function bindTablistKeyboard(tablist, onSelect) {
+    const tabs = [...tablist.querySelectorAll('[role="tab"]')];
+    tablist.addEventListener("keydown", (event) => {
+      const currentIndex = tabs.indexOf(event.target.closest('[role="tab"]'));
+      if (currentIndex < 0) return;
+      let nextIndex = null;
+      if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
+      if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = tabs.length - 1;
+      if (nextIndex === null) return;
+      event.preventDefault();
+      onSelect(tabs[nextIndex]);
+      tabs[nextIndex].focus();
     });
+  }
+
+  const leaderboardTabs = document.querySelector(".mode-tabs");
+  const leaderboardPanel = document.querySelector("#leaderboard-results-panel");
+
+  function selectLeaderboardMode(tab) {
+    state.mode = tab.dataset.mode;
+    state.expanded = false;
+    state.sortKey = "score";
+    state.sortDirection = "desc";
+    document.querySelectorAll(".mode-tab").forEach((item) => {
+      const active = item === tab;
+      item.classList.toggle("active", active);
+      item.setAttribute("aria-selected", String(active));
+      item.tabIndex = active ? 0 : -1;
+    });
+    leaderboardPanel.setAttribute("aria-labelledby", tab.id);
+    renderLeaderboard();
+  }
+
+  document.querySelectorAll(".mode-tab").forEach((tab) => {
+    tab.addEventListener("click", () => selectLeaderboardMode(tab));
   });
+  bindTablistKeyboard(leaderboardTabs, selectLeaderboardMode);
 
   tableHead.addEventListener("click", (event) => {
     const button = event.target.closest("[data-sort]");
@@ -308,7 +333,7 @@
       description: "Fixed branch-inversion tasks are grounded in mature C and C++ software, from language runtimes and parsers to cryptography, networking, and media codecs."
     },
     online: {
-      primary: "11 programs.",
+      primary: "14 programs.",
       secondary: "Open-ended runs.",
       description: "Online evaluation supports configurable run durations and measures how effectively an agent grows coverage without a predefined target branch. The published leaderboard uses 12-hour runs."
     }
@@ -323,6 +348,7 @@
       const selected = tab.dataset.corpusMode === mode;
       tab.classList.toggle("active", selected);
       tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
     });
     document.querySelector("#fixed-corpus-panel").hidden = mode !== "fixed";
     document.querySelector("#online-corpus-panel").hidden = mode !== "online";
@@ -331,13 +357,22 @@
   document.querySelectorAll(".corpus-tab").forEach((tab) => {
     tab.addEventListener("click", () => selectCorpusMode(tab.dataset.corpusMode));
   });
+  bindTablistKeyboard(document.querySelector(".corpus-tabs"), (tab) => selectCorpusMode(tab.dataset.corpusMode));
 
   const themeToggle = document.querySelector(".theme-toggle");
+  function updateThemeToggle() {
+    const dark = document.documentElement.dataset.theme === "dark";
+    themeToggle.setAttribute("aria-label", "Dark theme");
+    themeToggle.setAttribute("aria-pressed", String(dark));
+    themeToggle.title = dark ? "Switch to light theme" : "Switch to dark theme";
+  }
+  updateThemeToggle();
   themeToggle.addEventListener("click", () => {
     const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem("swe-test-theme", theme);
+    try { localStorage.setItem("swe-test-theme", theme); } catch {}
     document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#101311" : "#f4f2ed";
+    updateThemeToggle();
   });
 
   const menuButton = document.querySelector(".mobile-menu");
@@ -352,7 +387,7 @@
   }));
 
   const command = `uv sync\n\npython run_benchmark.py \\\n  --model your-model \\\n  --agent claude-code \\\n  --base-url "$BASE_URL" \\\n  --api-key "$API_KEY" \\\n  --tasks-dir tasks/swe-test \\\n  --extra --n-concurrent 4`;
-  const citation = `@misc{swe_test_2026,\n  title = {SWE-TEST: Evaluating Coding Agents on Reverse Reasoning and Input Synthesis},\n  year = {2026}\n}`;
+  const citation = `@misc{swe_test_2026,\n  year = {2026},\n  url = {https://swe-test-benchmark.github.io/}\n}`;
 
   async function copyText(text) {
     try {
