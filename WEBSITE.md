@@ -54,6 +54,10 @@ Online Arena uses a separate 12-hour aggregate schema:
 
 The JavaScript data keys retain their historical names: `unverified` is the paper's **Default** mode, `verified` is **Feedback-enabled**, and `online` is **Online Arena**. User-facing copy should use the paper terminology.
 
+## Result submissions
+
+The homepage links to a structured GitHub Issue form at `.github/ISSUE_TEMPLATE/submit-result.yml`. Submissions must identify the mode, model–scaffold configuration, benchmark commit, run window, environment, raw result artifacts, and any protocol deviations. Review is required before a result is added to `data/leaderboard.js`.
+
 ## Deployment
 
 The workflow in `.github/workflows/pages.yml` publishes only the website files whenever `main` receives a relevant change. In the GitHub repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. The expected URL is:

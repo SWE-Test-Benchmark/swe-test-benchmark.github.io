@@ -1,0 +1,115 @@
+name: Submit a benchmark result
+description: Propose a reproducible SWE-Test run for leaderboard review.
+title: "[Result submission]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for running SWE-Test. Please provide enough evidence to reproduce and review the result.
+
+        Do not include API keys, credentials, private source code, or unpublished security-sensitive inputs. If an artifact needs a private handoff, describe that need without attaching the artifact.
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Evaluation mode
+      description: Select the paper-defined mode used for this run.
+      options:
+        - Default
+        - Feedback-enabled
+        - Online Arena
+    validations:
+      required: true
+
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      description: Include the exact model name or version reported by the provider.
+      placeholder: e.g. GLM-5.2
+    validations:
+      required: true
+
+  - type: input
+    id: scaffold
+    attributes:
+      label: Scaffold
+      description: Name and version or commit of the agent scaffold.
+      placeholder: e.g. claude-code, version or commit
+    validations:
+      required: true
+
+  - type: input
+    id: effort
+    attributes:
+      label: Reasoning effort
+      description: Report the configured effort level, or state that no control was available.
+      placeholder: e.g. default, low, medium, high, or unavailable
+    validations:
+      required: true
+
+  - type: input
+    id: benchmark_commit
+    attributes:
+      label: Benchmark commit
+      description: Commit SHA of the SWE-Test tasks and evaluation harness.
+      placeholder: Full Git commit SHA
+    validations:
+      required: true
+
+  - type: input
+    id: run_window
+    attributes:
+      label: Run window
+      description: Give the per-task budget or Online Arena duration.
+      placeholder: e.g. 1 hour per task or 12 hours per program
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Result summary
+      description: Report the aggregate score and number of completed and scored tasks or programs.
+      placeholder: Include the pass rate or mean normalized coverage reward, denominator, and completion status.
+    validations:
+      required: true
+
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Reproduction artifacts
+      description: Link public raw result files, logs, configuration, and any scripts needed to reproduce the aggregate.
+      placeholder: One URL per line, with a short description of each artifact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Execution environment
+      description: Describe hardware, container/runtime versions, concurrency, network access, and provider endpoint type.
+      placeholder: Do not include credentials or secret endpoint parameters.
+    validations:
+      required: true
+
+  - type: textarea
+    id: deviations
+    attributes:
+      label: Protocol deviations
+      description: List every deviation from the published protocol, or write "None".
+      placeholder: None
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Submission confirmations
+      options:
+        - label: I removed API keys, credentials, and unpublished security-sensitive artifacts.
+          required: true
+        - label: I permit the submitted aggregate result and configuration metadata to be published on the SWE-Test leaderboard.
+          required: true
+        - label: I understand that submission does not guarantee inclusion and that maintainers may request additional evidence.
+          required: true
