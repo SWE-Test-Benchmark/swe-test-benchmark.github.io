@@ -74,6 +74,12 @@
     rows.sort((a, b) => {
       const left = a[state.sortKey];
       const right = b[state.sortKey];
+      const leftMissing = left === null || left === undefined || left === "";
+      const rightMissing = right === null || right === undefined || right === "";
+      if (leftMissing || rightMissing) {
+        if (leftMissing && rightMissing) return a.sourceRank - b.sourceRank;
+        return leftMissing ? 1 : -1;
+      }
       const comparison = typeof left === "number"
         ? left - right
         : String(left).localeCompare(String(right), undefined, { numeric: true, sensitivity: "base" });
@@ -142,6 +148,9 @@
       if (state.mode === "online") {
         const complete = !row.partial;
         const partialTitle = row.partial ? ' title="Known tasks only; QuickJS has no stable final reward"' : "";
+        const bugsKnown = Number.isFinite(row.bugs);
+        const bugCount = bugsKnown ? row.bugs : "—";
+        const bugTitle = bugsKnown ? "" : ' title="Bug count pending confirmation"';
         return `
         <tr>
           ${rank}
@@ -150,7 +159,7 @@
           <td><span class="effort-chip">${escapeHtml(row.duration)}</span></td>
           <td><span class="status-chip ${complete ? "done" : "running"}">${complete ? "● " : "◌ "}${escapeHtml(row.tasks)}</span></td>
           ${score}
-          <td class="numeric"><span class="bug-count ${row.bugs > 0 ? "has-bugs" : ""}">${row.bugs}</span></td>
+          <td class="numeric"><span class="bug-count ${row.bugs > 0 ? "has-bugs" : ""}"${bugTitle}>${bugCount}</span></td>
           <td class="numeric"${partialTitle}>${escapeHtml(row.tokens)}</td>
           <td class="numeric"${partialTitle}>${escapeHtml(row.cost)}</td>
         </tr>`;
@@ -179,9 +188,10 @@
 
   function renderChartTooltip(row, config) {
     const metric = state.mode === "online" ? "Mean reward" : "Pass rate";
+    const bugCount = Number.isFinite(row.bugs) ? row.bugs : "—";
     const details = state.mode === "online"
       ? `<span>Evaluated <b>${escapeHtml(row.tasks)}</b></span>
-         <span>Verified bugs <b>${row.bugs}</b></span>
+         <span>Verified bugs <b>${bugCount}</b></span>
          <span>Tokens <b>${escapeHtml(row.tokens)}</b></span>`
       : `<span>Scaffold <b>${escapeHtml(formatAgent(row.agent))}</b></span>
          <span>Scored <b>${escapeHtml(row.scored)}</b></span>

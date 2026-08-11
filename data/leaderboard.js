@@ -63,6 +63,7 @@ window.SWE_TEST_DATA = {
     ],
     online: [
       { model: "Qwen3.8-Max-Preview", agent: "claude-code", duration: "12h", tasks: "11 / 11", score: 0.3136, bugs: 7, tokens: "4.414B", tokensValue: 4.413630528, cost: "$2,544.82", costValue: 2544.82 },
+      { model: "Qwen3.8-Max (Formal)", agent: "claude-code", duration: "12h", tasks: "11 / 11", score: 0.305323, bugs: null, tokens: "3.142B", tokensValue: 3.142467217, cost: "$1,208.32", costValue: 1208.32 },
       { model: "Kimi-K2.6", agent: "claude-code", duration: "12h", tasks: "11 / 11", score: 0.2977, bugs: 4, tokens: "1.941B", tokensValue: 1.941477984, cost: "$357.36", costValue: 357.36 },
       { model: "GLM-5.2", agent: "claude-code", duration: "12h", tasks: "11 / 11", score: 0.2900, bugs: 5, tokens: "3.182B", tokensValue: 3.182442990, cost: "$1,033.66", costValue: 1033.66 },
       { model: "DeepSeek-V4-Pro", agent: "claude-code", duration: "12h", tasks: "11 / 11", score: 0.2818, bugs: 2, tokens: "3.577B", tokensValue: 3.576525915, cost: "$847.38", costValue: 847.38 },
