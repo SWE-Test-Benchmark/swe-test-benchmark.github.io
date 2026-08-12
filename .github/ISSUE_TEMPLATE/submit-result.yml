@@ -15,7 +15,7 @@ body:
       label: Evaluation mode
       description: Select the paper-defined mode used for this run.
       options:
-        - Default
+        - Open-loop
         - Feedback-enabled
         - Online Arena
     validations:

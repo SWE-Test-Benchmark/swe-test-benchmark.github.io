@@ -62,7 +62,7 @@
                 <a class="task-repository" href="${taskRepository}/${encodeURIComponent(task)}" target="_blank" rel="noreferrer">Repository ↗</a>
               </div>
               <div id="${panelId}" class="task-instance-description" hidden>
-                <p>Predict a new input that takes the fixed target branch. The same target is used in Default and Feedback-enabled modes.</p>
+                <p>Predict a new input that takes the fixed target branch. The same target is used in Open-loop and Feedback-enabled modes.</p>
                 <dl>
                   <div><dt>Source location</dt><dd><code>${escapeHtml(detail.branch || "See repository")}</code></dd></div>
                   <div><dt>Fuzz target</dt><dd><code>${escapeHtml(detail.fuzzTarget || item.target)}</code></dd></div>

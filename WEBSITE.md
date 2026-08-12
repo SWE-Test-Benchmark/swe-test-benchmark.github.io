@@ -52,7 +52,7 @@ Online Arena uses a separate 12-hour aggregate schema:
 
 `score` is the mean normalized coverage reward. `bugs` counts findings with an upstream issue number or confirmed fix. Numeric token and cost fields support client-side sorting; the formatted fields are displayed in the table.
 
-The JavaScript data keys retain their historical names: `unverified` is the paper's **Default** mode, `verified` is **Feedback-enabled**, and `online` is **Online Arena**. User-facing copy should use the paper terminology.
+The JavaScript data keys retain their historical names: `unverified` is the paper's **Open-loop** mode, `verified` is **Feedback-enabled**, and `online` is **Online Arena**. User-facing copy should use the paper terminology.
 
 ## Result submissions
 
