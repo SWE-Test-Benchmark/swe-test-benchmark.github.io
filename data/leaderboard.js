@@ -14,6 +14,8 @@ window.SWE_TEST_DATA = {
       { model: "Opus-4.8", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 71.7, avgReward: 0.866, exceptions: 14 },
       { model: "Kimi K2.6", agent: "claude-code", effort: "default", trials: "55 / 60", trialsValue: 55, scored: "55 / 60", scoredValue: 55, score: 68.3, avgReward: 1.059, exceptions: 0 },
       { model: "Kimi K2.6", agent: "kimi-cli", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 65.0, avgReward: 0.880, exceptions: 9 },
+      { model: "Qwen3.8-Max", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "57 / 60", scoredValue: 57, score: 53.3, avgReward: 0.864, exceptions: 35 },
+      { model: "Kimi K3", servedAs: "kimi-for-coding", agent: "claude-code", effort: "default", trials: "42 / 60", trialsValue: 42, scored: "42 / 60", scoredValue: 42, score: 51.7, avgReward: 0.881, exceptions: 0 },
       { model: "Qwen3.7-Max", agent: "codex", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 48.3, avgReward: 0.535, exceptions: 0 },
       { model: "DeepSeek-V4-Pro", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "58 / 60", scoredValue: 58, score: 46.7, avgReward: 0.731, exceptions: 2 },
       { model: "MiniMax-M3", agent: "claude-code", effort: "default", trials: "37 / 60", trialsValue: 37, scored: "36 / 60", scoredValue: 36, score: 45.0, avgReward: 0.533, exceptions: 0 },
@@ -34,8 +36,10 @@ window.SWE_TEST_DATA = {
       { model: "Qwen3.7-Max", agent: "mini-swe-agent", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 0.0, avgReward: 0.000, exceptions: 60 }
     ],
     unverified: [
+      { model: "Qwen3.8-Max", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "58 / 60", scoredValue: 58, score: 75.0, avgReward: 1.248, exceptions: 7 },
       { model: "Qwen3.7-Max", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 70.0, avgReward: 0.902, exceptions: 0 },
       { model: "Kimi K2.6", servedAs: "Kimi-for-coding", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 66.7, avgReward: 1.005, exceptions: 0 },
+      { model: "Kimi K3", servedAs: "kimi-for-coding", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 70.0, avgReward: 0.999, exceptions: 0 },
       { model: "GLM-5.1", agent: "claude-code", effort: "low", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 63.3, avgReward: 0.726, exceptions: 9 },
       { model: "GLM-5.2", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 61.7, avgReward: 0.931, exceptions: 0 },
       { model: "Kimi K2.6", agent: "kimi-cli", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 61.7, avgReward: 0.731, exceptions: 4 },
