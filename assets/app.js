@@ -4,11 +4,12 @@
   const data = window.SWE_TEST_DATA;
   const state = {
     mode: "unverified",
-    query: "",
+    modelQuery: "",
     sortKey: "score",
     sortDirection: "desc",
     expanded: false,
     filters: {},
+    selectedModels: {},
     selectedConfigurations: { verified: {}, unverified: {}, online: {} }
   };
 
@@ -48,6 +49,12 @@
   const body = document.querySelector("#leaderboard-body");
   const chart = document.querySelector("#score-chart");
   const search = document.querySelector("#leaderboard-search");
+  const modelPicker = document.querySelector(".model-picker");
+  const modelPickerToggle = document.querySelector("#model-picker-toggle");
+  const modelPickerPopover = document.querySelector("#model-picker-popover");
+  const modelPickerLabel = document.querySelector("#model-picker-label");
+  const modelPickerSummary = document.querySelector("#model-picker-summary");
+  const modelPickerList = document.querySelector("#model-picker-list");
   const showAllButton = document.querySelector("#show-all");
   const resultCount = document.querySelector("#result-count");
   const bestScore = document.querySelector("#current-best");
@@ -77,32 +84,35 @@
     return data.leaderboards[mode].map((row, index) => ({ ...row, _id: `${mode}-${index}`, _sourceIndex: index }));
   }
 
-  function rowStatus(row, mode = state.mode) {
-    if (mode === "online") {
-      if (!Number.isFinite(row.bugs)) return "pending";
-      return row.bugs > 0 ? "confirmed" : "none";
-    }
-    return row.trialsValue === 60 ? "complete" : "partial";
+  function modelMetadata(model) {
+    return data.modelMetadata?.[model] || {
+      provider: "Unclassified",
+      region: "Not classified",
+      availability: "Not classified",
+      size: "Large"
+    };
+  }
+
+  function getAvailableModels(mode = state.mode) {
+    return [...new Set(getSourceRows(mode).map((row) => row.model))]
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
   }
 
   function filterDefinitions(mode = state.mode) {
-    const rows = getSourceRows(mode);
-    const unique = (key) => [...new Set(rows.map((row) => row[key]))]
+    const models = getAvailableModels(mode);
+    const unique = (key) => [...new Set(models.map((model) => modelMetadata(model)[key]))]
       .sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: "base" }));
+    const sizeOrder = ["Small", "Medium", "Large"];
     return [
-      { key: "model", label: "Model", values: unique("model").map((value) => ({ value, label: value })), wide: true },
-      { key: "agent", label: "Scaffold", values: unique("agent").map((value) => ({ value, label: formatAgent(value) })) },
-      { key: "effort", label: mode === "online" ? "Run window" : "Reasoning effort", values: unique(mode === "online" ? "duration" : "effort").map((value) => ({ value, label: formatLabel(value) })) },
-      { key: "status", label: mode === "online" ? "Finding status" : "Run status", values: mode === "online"
-        ? [{ value: "confirmed", label: "Confirmed bugs" }, { value: "none", label: "No confirmed bugs" }, { value: "pending", label: "Pending confirmation" }]
-        : [{ value: "complete", label: "Complete (60 trials)" }, { value: "partial", label: "Partial run" }] }
-    ].filter((definition) => definition.key === "model" || definition.key === "status" || definition.values.length > 1);
+      { key: "region", label: "Provider region", values: unique("region").map((value) => ({ value, label: value })) },
+      { key: "availability", label: "Weight availability", values: unique("availability").map((value) => ({ value, label: value })) },
+      { key: "size", label: "Model size", values: sizeOrder.map((value) => ({ value, label: value })) }
+    ].filter((definition) => definition.values.length > 1);
   }
 
-  function filterValue(row, key, mode = state.mode) {
-    if (key === "effort") return mode === "online" ? row.duration : row.effort;
-    if (key === "status") return rowStatus(row, mode);
-    return row[key];
+  function ensureModelSelection(mode = state.mode) {
+    if (state.selectedModels[mode]) return;
+    state.selectedModels[mode] = new Set(getAvailableModels(mode));
   }
 
   function ensureFilters(mode = state.mode) {
@@ -114,9 +124,12 @@
   }
 
   function rowMatchesFilters(row, mode = state.mode) {
+    ensureModelSelection(mode);
+    if (!state.selectedModels[mode].has(row.model)) return false;
     ensureFilters(mode);
     const filters = state.filters[mode];
-    return filterDefinitions(mode).every((definition) => filters[definition.key].has(filterValue(row, definition.key, mode)));
+    const metadata = modelMetadata(row.model);
+    return filterDefinitions(mode).every((definition) => filters[definition.key].has(metadata[definition.key]));
   }
 
   function getEligibleConfigurations(model) {
@@ -126,13 +139,7 @@
   }
 
   function getSelectedRows() {
-    const query = state.query.trim().toLowerCase();
-    const candidates = getSourceRows().filter((row) => {
-      if (!rowMatchesFilters(row)) return false;
-      if (!query) return true;
-      const searchable = `${Object.values(row).join(" ")} ${formatAgent(row.agent)} ${row.servedAs || ""}`.toLowerCase();
-      return searchable.includes(query);
-    });
+    const candidates = getSourceRows().filter((row) => rowMatchesFilters(row));
     const groups = new Map();
     candidates.forEach((row) => {
       if (!groups.has(row.model)) groups.set(row.model, []);
@@ -247,7 +254,7 @@
     const className = field === "agent" ? "agent-chip" : "effort-chip";
     const dimensionLabel = field === "agent" ? "scaffold" : (state.mode === "online" ? "run window" : "reasoning effort");
     if (options.length < 2) return `<span class="${className}">${escapeHtml(label)}</span>`;
-    return `<button class="${className} config-trigger" type="button" data-config-id="${row._id}" data-config-field="${field}" aria-haspopup="listbox" aria-expanded="false" aria-label="Choose ${escapeHtml(row.model)} ${dimensionLabel}">${escapeHtml(label)}<span aria-hidden="true">⌄</span></button>`;
+    return `<button class="${className} config-trigger" type="button" data-config-id="${row._id}" data-config-field="${field}" aria-haspopup="listbox" aria-expanded="false" aria-label="Choose ${escapeHtml(row.model)} ${dimensionLabel}">${escapeHtml(label)}<svg class="config-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"></path></svg></button>`;
   }
 
   function modelCell(row) {
@@ -374,6 +381,7 @@
 
   function renderLeaderboard() {
     renderTableHead();
+    renderModelPicker();
     renderFilters();
     renderTable();
     renderChart();
@@ -397,6 +405,29 @@
   function formatLabel(value) {
     if (value === "default") return "Default";
     return String(value).charAt(0).toUpperCase() + String(value).slice(1);
+  }
+
+  function renderModelPicker() {
+    ensureModelSelection();
+    const models = getAvailableModels();
+    const selected = state.selectedModels[state.mode];
+    const query = state.modelQuery.trim().toLowerCase();
+    const visibleModels = models.filter((model) => {
+      const metadata = modelMetadata(model);
+      return `${model} ${metadata.provider}`.toLowerCase().includes(query);
+    });
+
+    if (selected.size === models.length) modelPickerLabel.textContent = `All ${models.length} models`;
+    else if (selected.size === 1) modelPickerLabel.textContent = [...selected][0];
+    else modelPickerLabel.textContent = `${selected.size} of ${models.length} models`;
+    modelPickerSummary.textContent = `${selected.size} selected · ${models.length} available`;
+    modelPickerList.innerHTML = visibleModels.length ? visibleModels.map((model) => {
+      const metadata = modelMetadata(model);
+      return `<label class="model-picker-option">
+        <input type="checkbox" data-model-option value="${escapeHtml(model)}"${selected.has(model) ? " checked" : ""}>
+        <span><strong>${escapeHtml(model)}</strong><small>${escapeHtml(metadata.provider)} · ${escapeHtml(metadata.availability)}</small></span>
+      </label>`;
+    }).join("") : '<p class="model-picker-empty">No models match this search.</p>';
   }
 
   function renderFilters() {
@@ -494,6 +525,10 @@
     state.sortKey = "score";
     state.sortDirection = "desc";
     closeConfigurationMenu();
+    state.modelQuery = "";
+    search.value = "";
+    modelPickerPopover.hidden = true;
+    modelPickerToggle.setAttribute("aria-expanded", "false");
     filterPopover.hidden = true;
     filterToggle.setAttribute("aria-expanded", "false");
     document.querySelectorAll(".mode-tab").forEach((item) => {
@@ -513,9 +548,45 @@
 
   filterToggle.addEventListener("click", () => {
     const open = filterPopover.hidden;
+    modelPickerPopover.hidden = true;
+    modelPickerToggle.setAttribute("aria-expanded", "false");
     filterPopover.hidden = !open;
     filterToggle.setAttribute("aria-expanded", String(open));
     if (open) filterPopover.querySelector("input")?.focus();
+  });
+
+  modelPickerToggle.addEventListener("click", () => {
+    const open = modelPickerPopover.hidden;
+    modelPickerPopover.hidden = !open;
+    modelPickerToggle.setAttribute("aria-expanded", String(open));
+    filterPopover.hidden = true;
+    filterToggle.setAttribute("aria-expanded", "false");
+    if (open) search.focus();
+  });
+
+  modelPickerList.addEventListener("change", (event) => {
+    const input = event.target.closest("[data-model-option]");
+    if (!input) return;
+    const selected = state.selectedModels[state.mode];
+    if (input.checked) selected.add(input.value);
+    else selected.delete(input.value);
+    state.expanded = false;
+    renderLeaderboard();
+    search.focus();
+  });
+
+  document.querySelector("#model-select-all").addEventListener("click", () => {
+    state.selectedModels[state.mode] = new Set(getAvailableModels());
+    state.expanded = false;
+    renderLeaderboard();
+    search.focus();
+  });
+
+  document.querySelector("#model-clear").addEventListener("click", () => {
+    state.selectedModels[state.mode] = new Set();
+    state.expanded = false;
+    renderLeaderboard();
+    search.focus();
   });
 
   document.querySelector("#filter-close").addEventListener("click", () => {
@@ -563,6 +634,10 @@
   });
 
   document.addEventListener("click", (event) => {
+    if (!modelPickerPopover.hidden && !modelPicker.contains(event.target)) {
+      modelPickerPopover.hidden = true;
+      modelPickerToggle.setAttribute("aria-expanded", "false");
+    }
     if (!filterPopover.hidden && !filterPopover.contains(event.target) && !filterToggle.contains(event.target)) {
       filterPopover.hidden = true;
       filterToggle.setAttribute("aria-expanded", "false");
@@ -580,6 +655,11 @@
       filterToggle.setAttribute("aria-expanded", "false");
       filterToggle.focus();
     }
+    if (!modelPickerPopover.hidden) {
+      modelPickerPopover.hidden = true;
+      modelPickerToggle.setAttribute("aria-expanded", "false");
+      modelPickerToggle.focus();
+    }
   });
 
   window.addEventListener("resize", closeConfigurationMenu);
@@ -596,9 +676,8 @@
   });
 
   search.addEventListener("input", () => {
-    state.query = search.value;
-    state.expanded = true;
-    renderLeaderboard();
+    state.modelQuery = search.value;
+    renderModelPicker();
   });
 
   showAllButton.addEventListener("click", () => {
@@ -689,7 +768,7 @@
     menuButton.setAttribute("aria-expanded", "false");
   }));
 
-  const command = `uv sync\n\npython run_benchmark.py \\\n  --model your-model \\\n  --agent claude-code \\\n  --base-url "$BASE_URL" \\\n  --api-key "$API_KEY" \\\n  --tasks-dir tasks/swe-test \\\n  --extra --n-concurrent 4`;
+  const command = `uv sync --frozen\n\npython run_benchmark.py \\\n  --model your-model \\\n  --agent claude-code \\\n  --base-url "$BASE_URL" \\\n  --api-key "$API_KEY" \\\n  --tasks-dir offline/with-verifier \\\n  --extra --n-concurrent 4`;
   const citation = `@misc{swe_test_2026,\n  title = {{SWE-Test}: Benchmarking LLM Vulnerability Discovery via Input Prediction},\n  year = {2026},\n  url = {https://swe-test-benchmark.github.io/}\n}`;
 
   async function copyText(text) {

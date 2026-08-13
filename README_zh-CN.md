@@ -1,6 +1,6 @@
 # SWE-Test
 
-**网站：** [交互式排行榜与 Benchmark 概览](https://swe-test-benchmark.github.io/) · [网站维护与部署说明](WEBSITE.md)
+**网站：** [交互式排行榜与 Benchmark 概览](https://swe-test-benchmark.github.io/) · [Benchmark 正式仓库](https://github.com/SWE-Test-Benchmark/SWE-Test-Benchmark) · [网站维护与部署说明](WEBSITE.md)
 
 **SWE-Test: Benchmarking LLM Agents' Vulnerability Discovery Ability via Input Prediction** 通过真实 C/C++ 程序上的输入预测任务评测漏洞挖掘 Agent，并将这一复合能力分解为代码理解、反馈驱动纠正和路径探索。
 
@@ -160,16 +160,14 @@ composite     = mean(regions_reward, lines_reward, branches_reward, functions_re
 ### 快速开始
 
 ```bash
-harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
-  -a claude-code \
-  --ae ANTHROPIC_AUTH_TOKEN=sk-xxx \
-  --ae ANTHROPIC_BASE_URL=https://dashscope.aliyuncs.com/apps/anthropic \
-  --ae ANTHROPIC_MODEL=qwen3.7-max \
-  --ae ANTHROPIC_DEFAULT_HAIKU_MODEL=qwen3.6-flash \
-  --ae ANTHROPIC_DEFAULT_SONNET_MODEL=qwen3.7-max \
-  --ae ANTHROPIC_DEFAULT_OPUS_MODEL=qwen3.7-max \
-  --ae CLAUDE_CODE_SUBAGENT_MODEL=qwen3.7-max \
-  --ae CLAUDE_CODE_EFFORT_LEVEL=max
+export ANTHROPIC_AUTH_TOKEN='YOUR_API_KEY'
+export ANTHROPIC_BASE_URL='https://your-endpoint.example/v1'
+
+scripts/run_online_eval.sh \
+  --task-set cov-only-12h \
+  --projects quickjs_fuzz_eval \
+  --parallel 1 \
+  --model qwen3.7-max
 ```
 
 ---
@@ -181,7 +179,7 @@ harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
 - Python 3.12+, Docker 正常运行, 推荐使用 `uv`
 
 ```bash
-uv sync
+uv sync --frozen
 docker info >/dev/null
 ```
 
@@ -194,7 +192,7 @@ python run_benchmark.py \
   --base-url https://dashscope.aliyuncs.com/apps/anthropic \
   --model qwen3.7-max \
   --agent claude-code \
-  --tasks-dir tasks/swe-test \
+  --tasks-dir offline/with-verifier \
   --extra --n-concurrent 4 --agent-timeout-multiplier 2
 
 # 单题
@@ -203,12 +201,12 @@ python run_benchmark.py \
   --base-url https://dashscope.aliyuncs.com/apps/anthropic \
   --model qwen3.7-max \
   --agent claude-code \
-  --task tasks/swe-test/<task_name>
+  --task offline/with-verifier/<task_name>
 ```
 
 ### Default
 
-与上面相同，将 `--tasks-dir` 替换为 `tasks/swe-test-wo-verifier`。
+与上面相同，将 `--tasks-dir` 替换为 `offline/without-verifier`。
 
 ### 结果位置
 
@@ -221,16 +219,14 @@ python run_benchmark.py \
 ### Online Arena
 
 ```bash
-harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
-  -a claude-code \
-  --ae ANTHROPIC_AUTH_TOKEN=sk-xxx \
-  --ae ANTHROPIC_BASE_URL=https://dashscope.aliyuncs.com/apps/anthropic \
-  --ae ANTHROPIC_MODEL=qwen3.7-max \
-  --ae ANTHROPIC_DEFAULT_HAIKU_MODEL=qwen3.6-flash \
-  --ae ANTHROPIC_DEFAULT_SONNET_MODEL=qwen3.7-max \
-  --ae ANTHROPIC_DEFAULT_OPUS_MODEL=qwen3.7-max \
-  --ae CLAUDE_CODE_SUBAGENT_MODEL=qwen3.7-max \
-  --ae CLAUDE_CODE_EFFORT_LEVEL=max
+export ANTHROPIC_AUTH_TOKEN='YOUR_API_KEY'
+export ANTHROPIC_BASE_URL='https://your-endpoint.example/v1'
+
+scripts/run_online_eval.sh \
+  --task-set cov-only-12h \
+  --projects quickjs_fuzz_eval \
+  --parallel 1 \
+  --model qwen3.7-max
 ```
 
 ## Roadmap

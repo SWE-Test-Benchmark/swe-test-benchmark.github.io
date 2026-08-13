@@ -6,8 +6,8 @@
   const params = new URLSearchParams(window.location.search);
   const requestedSlug = params.get("domain") || corpus[0].slug;
   const domain = corpus.find((item) => item.slug === requestedSlug) || corpus[0];
-  const repository = "https://github.com/LiangcaiSu/SWE-Test-Benchmark";
-  const taskRepository = `${repository}/tree/main/tasks/swe-test`;
+  const repository = "https://github.com/SWE-Test-Benchmark/SWE-Test-Benchmark";
+  const taskRepository = `${repository}/tree/main/offline/with-verifier`;
 
   const escapeHtml = (value) => String(value)
     .replaceAll("&", "&amp;")
@@ -86,9 +86,9 @@
   });
 
   const firstTask = domain.programs[0].tasks[0];
-  const command = `uv sync\n\npython run_benchmark.py \\\n  --model your-model \\\n  --agent claude-code \\\n  --base-url "$BASE_URL" \\\n  --api-key "$API_KEY" \\\n  --task tasks/swe-test/${firstTask}`;
+  const command = `uv sync --frozen\n\npython run_benchmark.py \\\n  --model your-model \\\n  --agent claude-code \\\n  --base-url "$BASE_URL" \\\n  --api-key "$API_KEY" \\\n  --task offline/with-verifier/${firstTask}`;
   document.querySelector("#registry-command").innerHTML = `<span class="comment"># Install dependencies</span>
-<span class="prompt">$</span> <span class="syntax-command">uv</span> <span class="syntax-subcommand">sync</span>
+<span class="prompt">$</span> <span class="syntax-command">uv</span> <span class="syntax-subcommand">sync</span> <span class="syntax-flag">--frozen</span>
 
 <span class="comment"># Run one Feedback-enabled task</span>
 <span class="prompt">$</span> <span class="syntax-command">python</span> <span class="syntax-path">run_benchmark.py</span> <span class="syntax-continuation">\\</span>
@@ -96,7 +96,7 @@
   <span class="syntax-flag">--agent</span> <span class="syntax-value">claude-code</span> <span class="syntax-continuation">\\</span>
   <span class="syntax-flag">--base-url</span> <span class="syntax-env">"$BASE_URL"</span> <span class="syntax-continuation">\\</span>
   <span class="syntax-flag">--api-key</span> <span class="syntax-env">"$API_KEY"</span> <span class="syntax-continuation">\\</span>
-  <span class="syntax-flag">--task</span> <span class="syntax-value">tasks/swe-test/${escapeHtml(firstTask)}</span>`;
+  <span class="syntax-flag">--task</span> <span class="syntax-value">offline/with-verifier/${escapeHtml(firstTask)}</span>`;
 
   const toast = document.querySelector("#toast");
   async function copyText(text) {

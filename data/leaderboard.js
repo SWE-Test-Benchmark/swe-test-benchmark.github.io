@@ -1,5 +1,23 @@
 window.SWE_TEST_DATA = {
   updated: "2026-08",
+  modelMetadata: {
+    "GLM-5.1": { provider: "Z.ai", region: "China-based", availability: "Open weights", size: "Large" },
+    "GLM-5.2": { provider: "Z.ai", region: "China-based", availability: "Open weights", size: "Large" },
+    "Qwen3.7-Max": { provider: "Alibaba Cloud", region: "China-based", availability: "Hosted model", size: "Large" },
+    "Qwen3.8-Max": { provider: "Alibaba Cloud", region: "China-based", availability: "Hosted model", size: "Large" },
+    "Qwen3.8-Max-Preview": { provider: "Alibaba Cloud", region: "China-based", availability: "Hosted model", size: "Large" },
+    "DeepSeek-V4-Pro": { provider: "DeepSeek", region: "China-based", availability: "Hosted model", size: "Large" },
+    "Kimi K2.6": { provider: "Moonshot AI", region: "China-based", availability: "Open weights", size: "Large" },
+    "Kimi K3": { provider: "Moonshot AI", region: "China-based", availability: "Open weights", size: "Large" },
+    "MiniMax-M3": { provider: "MiniMax", region: "China-based", availability: "Open weights", size: "Large" },
+    "Mimo-v2.5-pro": { provider: "Xiaomi", region: "China-based", availability: "Open weights", size: "Large" },
+    "GPT-5.5": { provider: "OpenAI", region: "Outside China", availability: "Hosted model", size: "Large" },
+    "GPT-OSS-120B": { provider: "OpenAI", region: "Outside China", availability: "Open weights", size: "Small" },
+    "Opus-4.6": { provider: "Anthropic", region: "Outside China", availability: "Hosted model", size: "Large" },
+    "Opus-4.8": { provider: "Anthropic", region: "Outside China", availability: "Hosted model", size: "Large" },
+    "Gemini-3.5-Flash": { provider: "Google", region: "Outside China", availability: "Hosted model", size: "Medium" },
+    "Grok-4.3": { provider: "xAI", region: "Outside China", availability: "Hosted model", size: "Large" }
+  },
   leaderboards: {
     verified: [
       { model: "GLM-5.1", agent: "claude-code", effort: "medium", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 83.3, avgReward: 1.131, exceptions: 0 },

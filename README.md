@@ -1,6 +1,6 @@
 # SWE-Test
 
-**Website:** [Interactive leaderboard and benchmark overview](https://swe-test-benchmark.github.io/) · [Website development guide](WEBSITE.md)
+**Website:** [Interactive leaderboard and benchmark overview](https://swe-test-benchmark.github.io/) · [Benchmark repository](https://github.com/SWE-Test-Benchmark/SWE-Test-Benchmark) · [Website development guide](WEBSITE.md)
 
 **SWE-Test: Benchmarking LLM Agents' Vulnerability Discovery Ability via Input Prediction** evaluates vulnerability-discovery agents on real-world C and C++ programs. It decomposes discovery into code comprehension, feedback-driven correction, and path exploration.
 
@@ -167,7 +167,7 @@ composite     = mean(regions_reward, lines_reward, branches_reward, functions_re
 - Python 3.12+, Docker daemon running, `uv` recommended
 
 ```bash
-uv sync
+uv sync --frozen
 docker info >/dev/null
 ```
 
@@ -180,7 +180,7 @@ python run_benchmark.py \
   --base-url https://dashscope.aliyuncs.com/apps/anthropic \
   --model qwen3.7-max \
   --agent claude-code \
-  --tasks-dir tasks/swe-test \
+  --tasks-dir offline/with-verifier \
   --extra --n-concurrent 4 --agent-timeout-multiplier 2
 
 # Single task
@@ -189,12 +189,12 @@ python run_benchmark.py \
   --base-url https://dashscope.aliyuncs.com/apps/anthropic \
   --model qwen3.7-max \
   --agent claude-code \
-  --task tasks/swe-test/<task_name>
+  --task offline/with-verifier/<task_name>
 ```
 
 ### Default
 
-Same as above, replace `--tasks-dir` with `tasks/swe-test-wo-verifier`.
+Same as above, replace `--tasks-dir` with `offline/without-verifier`.
 
 ### Where results go
 
@@ -207,16 +207,14 @@ Same as above, replace `--tasks-dir` with `tasks/swe-test-wo-verifier`.
 ### Online Arena
 
 ```bash
-harbor run -p harbor-tasks-cov/quickjs_fuzz_eval --jobs-dir ./jobs-quickjs \
-  -a claude-code \
-  --ae ANTHROPIC_AUTH_TOKEN=sk-xxx \
-  --ae ANTHROPIC_BASE_URL=https://dashscope.aliyuncs.com/apps/anthropic \
-  --ae ANTHROPIC_MODEL=qwen3.7-max \
-  --ae ANTHROPIC_DEFAULT_HAIKU_MODEL=qwen3.6-flash \
-  --ae ANTHROPIC_DEFAULT_SONNET_MODEL=qwen3.7-max \
-  --ae ANTHROPIC_DEFAULT_OPUS_MODEL=qwen3.7-max \
-  --ae CLAUDE_CODE_SUBAGENT_MODEL=qwen3.7-max \
-  --ae CLAUDE_CODE_EFFORT_LEVEL=max
+export ANTHROPIC_AUTH_TOKEN='YOUR_API_KEY'
+export ANTHROPIC_BASE_URL='https://your-endpoint.example/v1'
+
+scripts/run_online_eval.sh \
+  --task-set cov-only-12h \
+  --projects quickjs_fuzz_eval \
+  --parallel 1 \
+  --model qwen3.7-max
 ```
 
 ## Roadmap
