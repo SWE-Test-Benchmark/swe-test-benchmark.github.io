@@ -520,8 +520,8 @@ h1 span { color: var(--accent); }
 .citation-card button { position: absolute; top: 12px; right: 12px; padding: 7px 10px; color: #d7e7de; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.15); border-radius: 4px; cursor: pointer; font: 550 13px var(--mono); }
 
 .site-footer { padding-block: 52px; background: var(--surface); border-top: 1px solid var(--line); }
-.footer-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 50px; align-items: end; }
-.footer-brand { margin-bottom: 12px; }
+.footer-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 50px; align-items: center; }
+.footer-brand { margin-bottom: 0; }
 .footer-grid p { margin: 0; color: var(--ink-faint); font-size: 15px; }
 .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 24px; }
 .footer-links a { color: var(--ink-soft); font: 500 14px var(--mono); text-decoration: none; }
