@@ -20,7 +20,7 @@
       chartTitle: "Top models by pass rate",
       chartMetric: "Pass rate (%)",
       chartLabel: "Top Feedback-enabled pass rates",
-      note: "Pass rate counts rewards ≥ 1.0 across 60 tasks; missing results count as zero. Trial directories, scored results, average reward, and exceptions are shown as reported.",
+      note: "Pass rate counts strict successes with reward ≥ 2.0 and divides by the reported trial directories; missing results remain in the denominator. Average reward is normalized across all 60 tasks.",
       scoreScale: 100,
       formatScore: (score) => `${score.toFixed(1)}%`
     },
@@ -30,7 +30,7 @@
       chartTitle: "Top models by pass rate",
       chartMetric: "Pass rate (%)",
       chartLabel: "Top Open-loop pass rates",
-      note: "Pass rate counts rewards ≥ 1.0 across 60 Open-loop tasks; missing results count as zero. Trial directories, scored results, average reward, and exceptions are shown as reported.",
+      note: "Pass rate counts strict successes with reward ≥ 2.0 and divides by the reported Open-loop trial directories; missing results remain in the denominator. Average reward is normalized across all 60 tasks.",
       scoreScale: 100,
       formatScore: (score) => `${score.toFixed(1)}%`
     },

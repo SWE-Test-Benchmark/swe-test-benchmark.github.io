@@ -49,6 +49,8 @@ Agent 的任务是构造一个新的测试输入，**使该分支条件从 FALSE
 
 **评分：** Pass = 命中目标分支，Fail = 其他。
 
+所有 Kimi 系列结果均通过 `kimi-for-coding` endpoint 提供。
+
 #### Feedback-enabled
 
 | 模型 | Scaffold | Effort | Valid | Pass Rate | SWE-bench-Verified | Terminal-Bench-2.0 | 平均 Turns | 平均耗时 | Tokens |
@@ -66,11 +68,9 @@ Agent 的任务是构造一个新的测试输入，**使该分支条件从 FALSE
 | Opus-4.8 | claude-code | high | **60/60** | 10.0% | 88.6%(vendor) | 74.6%(vendor) | 161.3 | 58.1m | 4.45M |
 | GLM-5.2 | claude-code | high | **60/60** | 8.3% | — | — | 139.6 | 18.1m | 6.29M |
 | GLM-5.2 | terminus-2 | — | 49/60 | 8.2% | — | — | 52.0 | 38.4m | 3.06M |
-| Kimi-for-coding | claude-code | high | 58/60 | 6.9% | — | — | 208.8 | 18.6m | 8.07M |
 | MiniMax-M3 | claude-code | high | 21/60 | 4.8% | 80.5%(vendor) | - | 124.3 | 10.7m | 4.76M |
 | Kimi-K2.6 | terminus-2 | — | 25/60 | 4.0% | — | — | N/A | 33.6m | 10.05M |
 | DeepSeek-V4-Pro | terminus-2 | — | 27/60 | 3.7% | 79.4%(vendor) | 67.9%(vendor) | N/A | 53.6m | 5.25M |
-| Kimi-for-coding | terminus-2 | — | 44/60 | 2.3% | — | — | 94.0 | 55.8m | 5.62M |
 | Gemini-3.5-Flash | gemini-cli | — | **60/60** | 1.7% | 78.8%(vendor) | 76.2%(vendor) | N/A | 4.1m | N/A |
 | Qwen3.7-Max | codex | high | **60/60** | 1.7% | 80.4%(vendor) | 69.7%(vendor) | 78.5 | 11.9m | 3.17M |
 | GLM-5.1 | terminus-2 | — | 61/60 | 1.6% | — | — | 75.0 | 118.9m | 3.16M |
@@ -101,7 +101,6 @@ Agent 的任务是构造一个新的测试输入，**使该分支条件从 FALSE
 | MiniMax-M3 | claude-code | high | 24/60 | 4.2% | **26.8** | **2.7m** | **0.66M** |
 | Mimo-v2.5-pro | terminus-2 | — | 24/60 | 4.2% | N/A | 8.5m | 0.33M |
 | Qwen3.7-Max | codex | high | **60/60** | 3.3% | 45.8 | 5.7m | 1.17M |
-| Kimi-for-coding | terminus-2 | — | 38/60 | 2.6% | N/A | 19.7m | 1.31M |
 | Kimi-K2.6 | terminus-2 | — | 46/60 | 2.2% | N/A | 12.2m | 1.89M |
 | DeepSeek-V4-Pro | terminus-2 | — | 50/60 | 2.0% | N/A | 19.5m | 1.46M |
 | GLM-5.1 | terminus-2 | — | 59/60 | 1.7% | N/A | 29.5m | 5.85M |
