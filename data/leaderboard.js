@@ -52,7 +52,7 @@ window.SWE_TEST_DATA = {
       { model: "GPT-OSS-120B", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "39 / 60", scoredValue: 39, score: 0.0, avgReward: 0.106, exceptions: 21 },
       { model: "Grok-4.3", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 0.0, avgReward: 0.050, exceptions: 41 },
       { model: "Mimo-v2.5-pro", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "56 / 60", scoredValue: 56, score: 0.0, avgReward: 0.000, exceptions: 59 },
-      { model: "Mimo-v2.5-pro", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "14 / 60", scoredValue: 14, score: 0.0, avgReward: 0.050, exceptions: 46 },
+      { model: "Mimo-v2.5-pro", agent: "terminus-2", effort: "default", trials: "10 / 60", trialsValue: 10, scored: "3 / 60", scoredValue: 3, score: 0.0, avgReward: 0.017, exceptions: 6 },
       { model: "Qwen3.7-Max", agent: "mini-swe-agent", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 0.0, avgReward: 0.000, exceptions: 60 },
       { model: "Qwen3.7-Max", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 0.0, avgReward: 0.292, exceptions: 0 }
     ],
