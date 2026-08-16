@@ -81,8 +81,6 @@ window.SWE_TEST_DATA = {
       { model: "GLM-5.1", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "59 / 60", scoredValue: 59, score: 1.7, avgReward: 0.331, exceptions: 1 },
       { model: "Mimo-v2.5-pro", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "24 / 60", scoredValue: 24, score: 1.7, avgReward: 0.125, exceptions: 36 },
       { model: "Qwen3.7-Max", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 1.7, avgReward: 0.332, exceptions: 0 },
-      { model: "Gemini-3.5-Flash", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "0 / 60", scoredValue: 0, score: 0.0, avgReward: 0.000, exceptions: 0 },
-      { model: "GPT-5.5", agent: "codex", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "0 / 60", scoredValue: 0, score: 0.0, avgReward: 0.000, exceptions: 2 },
       { model: "GPT-OSS-120B", agent: "codex", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 0.0, avgReward: 0.067, exceptions: 25 },
       { model: "GPT-OSS-120B", agent: "terminus-2", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "59 / 60", scoredValue: 59, score: 0.0, avgReward: 0.135, exceptions: 1 },
       { model: "Mimo-v2.5-pro", agent: "claude-code", effort: "default", trials: "60 / 60", trialsValue: 60, scored: "60 / 60", scoredValue: 60, score: 0.0, avgReward: 0.000, exceptions: 58 },
