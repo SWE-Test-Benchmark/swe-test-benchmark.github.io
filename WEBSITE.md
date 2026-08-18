@@ -21,17 +21,17 @@ Each leaderboard record uses this schema:
 ```js
 {
   model: "Model name",
+  servedAs: "endpoint-alias", // optional; shown when a model was served under a different endpoint name
   agent: "agent-scaffold",
   effort: "default",
-  trials: "60 / 60",
-  trialsValue: 60,
   scored: "60 / 60",
   scoredValue: 60,
   score: 42.0,
-  avgReward: 0.500,
-  exceptions: 0
+  avgReward: 0.500
 }
 ```
+
+`scored` is the number of the 60 tasks with a reconstructed reward; `score` is the pass rate (share of all 60 tasks with reward ≥ 2.0) and `avgReward` is the sum of per-task rewards divided by 60.
 
 Online Arena uses a separate 12-hour aggregate schema:
 

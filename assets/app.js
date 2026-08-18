@@ -20,7 +20,7 @@
       chartTitle: "Top models by pass rate",
       chartMetric: "Pass rate (%)",
       chartLabel: "Top Feedback-enabled pass rates",
-      note: "Pass rate counts strict successes with reward ≥ 2.0 and divides by the reported trial directories; missing results remain in the denominator. Average reward is normalized across all 60 tasks.",
+      note: "Pass rate: share of the 60 tasks with reward ≥ 2.0, meaning the target branch was triggered; unscored tasks count as zero. Avg. reward: sum of per-task rewards divided by 60.",
       scoreScale: 100,
       formatScore: (score) => `${score.toFixed(1)}%`
     },
@@ -30,7 +30,7 @@
       chartTitle: "Top models by pass rate",
       chartMetric: "Pass rate (%)",
       chartLabel: "Top Open-loop pass rates",
-      note: "Pass rate counts strict successes with reward ≥ 2.0 and divides by the reported Open-loop trial directories; missing results remain in the denominator. Average reward is normalized across all 60 tasks.",
+      note: "Pass rate: share of the 60 tasks with reward ≥ 2.0, meaning the target branch was triggered; unscored tasks count as zero. Avg. reward: sum of per-task rewards divided by 60.",
       scoreScale: 100,
       formatScore: (score) => `${score.toFixed(1)}%`
     },
@@ -211,11 +211,9 @@
         ${sortableHeader("tokensValue", "Total tokens", true)}
         ${sortableHeader("costValue", "Est. cost", true)}` : `
         <th scope="col">Effort</th>
-        ${sortableHeader("trialsValue", "Trial dirs", true)}
         ${sortableHeader("scoredValue", "Scored", true)}
         ${sortableHeader("score", "Pass rate", true)}
-        ${sortableHeader("avgReward", "Avg. reward", true)}
-        ${sortableHeader("exceptions", "Exceptions", true)}`}
+        ${sortableHeader("avgReward", "Avg. reward", true)}`}
     </tr>`;
   }
 
@@ -294,20 +292,18 @@
         </tr>`;
       }
 
-      const trialsComplete = row.trialsValue === 60;
+      const scoredComplete = row.scoredValue === 60;
       return `
         <tr>
           ${rank}
           ${modelCell(row)}
           <td>${configurationChip(row, "agent")}</td>
           <td>${configurationChip(row, "effort")}</td>
-          <td class="numeric"><span class="status-chip ${trialsComplete ? "done" : "running"}">${trialsComplete ? "● " : "◌ "}${escapeHtml(row.trials)}</span></td>
-          <td class="numeric">${escapeHtml(row.scored)}</td>
+          <td class="numeric"><span class="status-chip ${scoredComplete ? "done" : "running"}">${scoredComplete ? "● " : "◌ "}${escapeHtml(row.scored)}</span></td>
           ${score}
           <td class="numeric">${row.avgReward.toFixed(3)}</td>
-          <td class="numeric">${row.exceptions}</td>
         </tr>`;
-    }).join("") : '<tr class="empty-results"><td colspan="9">No models match the current search and filters.</td></tr>';
+    }).join("") : `<tr class="empty-results"><td colspan="${state.mode === "online" ? 9 : 7}">No models match the current search and filters.</td></tr>`;
 
     resultCount.textContent = `Displaying ${visible.length} of ${rows.length} models`;
     const customSelections = rows.filter((row) => state.selectedConfigurations[state.mode][row.model] === row._id).length;
@@ -341,7 +337,7 @@
   function renderChart() {
     const config = modeConfig[state.mode];
     const completed = getSelectedRows()
-      .filter((row) => state.mode === "online" || row.trialsValue === 60)
+      .filter((row) => state.mode === "online" || row.scoredValue === 60)
       .sort((a, b) => b.score - a.score)
       .slice(0, 5);
     chart.innerHTML = completed.map((row) => {
@@ -478,7 +474,7 @@
         ${options.map((row) => {
           const effort = state.mode === "online" ? row.duration : row.effort;
           const endpoint = row.servedAs ? `<span>served as ${escapeHtml(row.servedAs)}</span>` : "";
-          const runState = state.mode === "online" ? row.tasks : row.trials;
+          const runState = state.mode === "online" ? row.tasks : row.scored;
           const selected = configurationDimension(row, field) === configurationDimension(current, field);
           const primary = choosingAgent ? formatAgent(row.agent) : formatLabel(effort);
           const secondary = choosingAgent ? formatLabel(effort) : formatAgent(row.agent);
